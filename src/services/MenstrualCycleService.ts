@@ -14,23 +14,42 @@ import { CycleSchema } from "../schemas/CycleSchema";
 export class MenstrualCycle {
   private readonly lastPeriodStart: Date;
   private readonly cycleLength: number;
+
   private readonly periodLength: number;
   private readonly ovulationLength: number;
   private readonly lutealLength: number;
   private readonly follicularLength: number;
 
+  // Calculated phase end days
+  private readonly periodEndDay: number;
+  private readonly follicularEndDay: number;
+  private readonly ovulationEndDay: number;
+  private readonly lutealEndDay: number;
+
   constructor(config: CycleConfig) {
-    const parsedConfig = CycleSchema.parse(config);
-    this.lastPeriodStart = parsedConfig.lastPeriodStart;
-    this.cycleLength = parsedConfig.cycleLength;
-    this.periodLength = parsedConfig.periodLength;
+    const parsed = CycleSchema.parse(config);
 
-    this.ovulationLength = parsedConfig.ovulationLength;
-    this.lutealLength = parsedConfig.lutealLength;
+    this.lastPeriodStart = parsed.lastPeriodStart;
+    this.cycleLength = parsed.cycleLength;
 
+    this.periodLength = parsed.periodLength;
+    this.ovulationLength = parsed.ovulationLength;
+    this.lutealLength = parsed.lutealLength;
+
+    // If follicular length is not provided, calculate it based on the other phases
+    // Follicular length is the remaining days after subtracting period, ovulation, and luteal lengths
     this.follicularLength =
-      parsedConfig.follicularLength ??
-      this.cycleLength - this.lutealLength - this.ovulationLength;
+      parsed.follicularLength ??
+      this.cycleLength -
+        this.periodLength -
+        this.ovulationLength -
+        this.lutealLength;
+
+    // Calculate the end days of each phase (1-based index)
+    this.periodEndDay = this.periodLength;
+    this.follicularEndDay = this.periodEndDay + this.follicularLength;
+    this.ovulationEndDay = this.follicularEndDay + this.ovulationLength;
+    this.lutealEndDay = this.ovulationEndDay + this.lutealLength;
   }
   /**
    * Determines the phase of the cycle based on the day of the cycle.
@@ -38,9 +57,9 @@ export class MenstrualCycle {
    * @returns The phase of the cycle for the given day.
    */
   private getPhaseByDay(day: number): CycleDay["phase"] {
-    if (day <= this.periodLength) return PHASES.MENSTRUATION;
-    if (day <= this.follicularLength) return PHASES.FOLLICULAR;
-    if (day === this.ovulationLength) return PHASES.OVULATION;
+    if (day <= this.periodEndDay) return PHASES.MENSTRUATION;
+    if (day <= this.follicularEndDay) return PHASES.FOLLICULAR;
+    if (day <= this.ovulationEndDay) return PHASES.OVULATION;
     return PHASES.LUTEAL;
   }
   /**
@@ -63,8 +82,7 @@ export class MenstrualCycle {
     );
 
     const nextPeriodStart = addDays(this.lastPeriodStart, this.cycleLength);
-    const ovulationStartDay = this.periodLength + this.follicularLength + 1;
-    const ovulationDate = addDays(this.lastPeriodStart, ovulationStartDay - 1);
+    const ovulationDate = addDays(this.lastPeriodStart, this.follicularEndDay); // Día 1 de ovulación
 
     return {
       days,
@@ -84,6 +102,7 @@ export class MenstrualCycle {
     if (!(newStartDate instanceof Date) || isNaN(newStartDate.getTime())) {
       throw new ValidationError("newStartDate must be a valid Date object");
     }
+
     return new MenstrualCycle({
       lastPeriodStart: newStartDate,
       cycleLength: this.cycleLength,

@@ -116,4 +116,66 @@ describe("MenstrualCycle", () => {
         })
     ).toThrow();
   });
+
+  it("should support a short ovulation length", () => {
+    const cycle = new MenstrualCycle({
+      lastPeriodStart: new Date("2025-06-01"),
+      ovulationLength: 2,
+    });
+
+    const calendar = cycle.getCycleCalendar();
+    expect(calendar.days[13].phase).toBe("Ovulation");
+    expect(calendar.days[14].phase).toBe("Luteal");
+  });
+
+  it("should support a long ovulation length", () => {
+    const cycle = new MenstrualCycle({
+      lastPeriodStart: new Date("2025-06-01"),
+      ovulationLength: 14,
+    });
+
+    const calendar = cycle.getCycleCalendar();
+    expect(calendar.days[13].phase).toBe("Ovulation");
+    expect(calendar.days[14].phase).toBe("Luteal");
+  });
+
+  it("should support a short luteal length", () => {
+    const cycle = new MenstrualCycle({
+      lastPeriodStart: new Date("2025-06-01"),
+      lutealLength: 2,
+    });
+
+    const calendar = cycle.getCycleCalendar();
+    expect(calendar.days[14].phase).toBe("Luteal");
+  });
+
+  it("should support a long luteal length", () => {
+    const cycle = new MenstrualCycle({
+      lastPeriodStart: new Date("2025-06-01"),
+      lutealLength: 14,
+    });
+
+    const calendar = cycle.getCycleCalendar();
+    expect(calendar.days[14].phase).toBe("Luteal");
+  });
+
+  it("should support a short follicular length", () => {
+    const cycle = new MenstrualCycle({
+      lastPeriodStart: new Date("2025-06-01"),
+      follicularLength: 2,
+    });
+
+    const calendar = cycle.getCycleCalendar();
+    expect(calendar.days[15].phase).toBe("Follicular");
+  });
+
+  it("should support a long follicular length", () => {
+    const cycle = new MenstrualCycle({
+      lastPeriodStart: new Date("2025-06-01"),
+      follicularLength: 14,
+    });
+
+    const calendar = cycle.getCycleCalendar();
+    expect(calendar.days[15].phase).toBe("Follicular");
+  });
 });
