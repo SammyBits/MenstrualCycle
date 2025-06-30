@@ -34,7 +34,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sammybits/menstrual-cycle"
+    "url": "https://github.com/sammybits/MestrualCycle"
   },
   "devDependencies": {
     "@types/bun": "latest",
