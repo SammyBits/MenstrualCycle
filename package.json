@@ -1,0 +1,49 @@
+{
+  "name": "menstrual-cycle",
+  "version": "0.1.0",
+  "description": "TypeScript library for calculating and managing menstrual cycles with phases and correction.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test",
+    "prepare": "bun run build"
+  },
+  "keywords": [
+    "menstrual",
+    "cycle",
+    "ovulation",
+    "period",
+    "fertility",
+    "typescript",
+    "health",
+    "calendar"
+  ],
+  "author": "SammyBits",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sammybits/menstrual-cycle"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/jest": "30.0.0",
+    "jest": "30.0.3",
+    "ts-jest": "29.4.0",
+    "typescript": "5.3.3"
+  },
+  "dependencies": {
+    "zod": "3.25.67"
+  }
+}
