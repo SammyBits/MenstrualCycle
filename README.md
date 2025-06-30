@@ -71,11 +71,14 @@ console.log(updated.nextPeriodStart); // 2025-06-27
 
 ## 📘 Cycle Configuration
 
-| Field             | Type     | Description                          | Default |
-| ----------------- | -------- | ------------------------------------ | ------- |
-| `lastPeriodStart` | `Date`   | Required. Start date of last period. | —       |
-| `cycleLength`     | `number` | Optional. Must be between 21 and 35. | `28`    |
-| `periodLength`    | `number` | Optional. Must be between 3 and 7.   | `5`     |
+| Field              | Type     | Description                          | Default |
+| ------------------ | -------- | ------------------------------------ | ------- |
+| `lastPeriodStart`  | `Date`   | Required. Start date of last period. | —       |
+| `cycleLength`      | `number` | Optional. Must be between 21 and 35. | `28`    |
+| `periodLength`     | `number` | Optional. Must be between 3 and 7.   | `5`     |
+| `ovulationLength`  | `number` | Optional. Must be between 1 and 14.  | `1`     |
+| `lutealLength`     | `number` | Optional. Must be between 1 and 14.  | `14`    |
+| `follicularLength` | `number` | Optional. Must be between 1 and 14.  | —       |
 
 ---
 
