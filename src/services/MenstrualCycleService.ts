@@ -15,12 +15,22 @@ export class MenstrualCycle {
   private readonly lastPeriodStart: Date;
   private readonly cycleLength: number;
   private readonly periodLength: number;
+  private readonly ovulationLength: number;
+  private readonly lutealLength: number;
+  private readonly follicularLength: number;
 
   constructor(config: CycleConfig) {
     const parsedConfig = CycleSchema.parse(config);
     this.lastPeriodStart = parsedConfig.lastPeriodStart;
     this.cycleLength = parsedConfig.cycleLength;
     this.periodLength = parsedConfig.periodLength;
+
+    this.ovulationLength = parsedConfig.ovulationLength;
+    this.lutealLength = parsedConfig.lutealLength;
+
+    this.follicularLength =
+      parsedConfig.follicularLength ??
+      this.cycleLength - this.lutealLength - this.ovulationLength;
   }
   /**
    * Determines the phase of the cycle based on the day of the cycle.
@@ -29,8 +39,8 @@ export class MenstrualCycle {
    */
   private getPhaseByDay(day: number): CycleDay["phase"] {
     if (day <= this.periodLength) return PHASES.MENSTRUATION;
-    if (day <= 13) return PHASES.FOLLICULAR;
-    if (day === 14) return PHASES.OVULATION;
+    if (day <= this.follicularLength) return PHASES.FOLLICULAR;
+    if (day === this.ovulationLength) return PHASES.OVULATION;
     return PHASES.LUTEAL;
   }
   /**
@@ -53,7 +63,8 @@ export class MenstrualCycle {
     );
 
     const nextPeriodStart = addDays(this.lastPeriodStart, this.cycleLength);
-    const ovulationDate = addDays(this.lastPeriodStart, 13);
+    const ovulationStartDay = this.periodLength + this.follicularLength + 1;
+    const ovulationDate = addDays(this.lastPeriodStart, ovulationStartDay - 1);
 
     return {
       days,
@@ -61,6 +72,7 @@ export class MenstrualCycle {
       ovulationDate,
     };
   }
+
   /**
    * Recalculates the cycle calendar with a new start date, adjusting the cycle length and period length
    * as needed.
@@ -72,11 +84,13 @@ export class MenstrualCycle {
     if (!(newStartDate instanceof Date) || isNaN(newStartDate.getTime())) {
       throw new ValidationError("newStartDate must be a valid Date object");
     }
-
     return new MenstrualCycle({
       lastPeriodStart: newStartDate,
       cycleLength: this.cycleLength,
       periodLength: this.periodLength,
+      ovulationLength: this.ovulationLength,
+      lutealLength: this.lutealLength,
+      follicularLength: this.follicularLength,
     }).getCycleCalendar();
   }
 }
